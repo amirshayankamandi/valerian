@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>شهرک‌های ولیران بدون جواهری</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: survey drawing set — one summary sheet, then one sheet per parcel: drawing beside its area schedule */
+:root{
+  --paper:#F3F5F1; --sheet:#FBFCFA; --ink:#1C2629; --muted:#5A6866; --rule:#CDD5D0;
+  --lot:#F0E2BE; --lotline:#7B5B1F; --road:#BCC2C0; --cl:#8D9593;
+  --green:#DCEBD8; --hatch:#6F9F74; --accent:#B23A2B; --common:#C9DBEA; --commonline:#3F6D93;
+  --f-body:"Vazirmatn",Tahoma,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#121819; --sheet:#182021; --ink:#E4EAE7; --muted:#9AA8A5; --rule:#2E3A3B;
+  --lot:#3A3324; --lotline:#D6B66C; --road:#465051; --cl:#6E7978;
+  --green:#203427; --hatch:#5E9468; --accent:#E57461; --common:#22384A; --commonline:#86B4DA; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121819; --sheet:#182021; --ink:#E4EAE7; --muted:#9AA8A5; --rule:#2E3A3B;
+  --lot:#3A3324; --lotline:#D6B66C; --road:#465051; --cl:#6E7978;
+  --green:#203427; --hatch:#5E9468; --accent:#E57461; --common:#22384A; --commonline:#86B4DA; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75;direction:rtl;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.35}
+h1{font-size:clamp(26px,4vw,38px);font-weight:800}
+h2{font-size:24px;font-weight:800}
+h3{font-size:15px;font-weight:700}
+sup{font-size:.7em;line-height:0}
+small{color:var(--muted);font-weight:400}
+.eyebrow{margin:0;color:var(--accent);font-size:13px;font-weight:700;letter-spacing:.02em}
+.lede{max-width:68ch;color:var(--muted);margin:10px 0 0}
+.top{display:grid;gap:18px;border-bottom:2px solid var(--ink);padding-bottom:22px}
+.totals{display:flex;flex-wrap:wrap;gap:12px 36px}
+.totals div{display:grid}
+.totals dt{font-size:13px;color:var(--muted)}
+.totals dd{margin:0;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-size:12.5px;color:var(--muted);font-weight:600}
+.sum td small{display:block;font-size:12px}
+.sum td.n{font-weight:800;font-size:17px}
+.sum a{color:var(--ink);font-weight:700;text-decoration:none;border-bottom:1px solid var(--rule)}
+.sum a:hover,.sum a:focus-visible{border-color:var(--accent);outline:none}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav a{color:var(--ink);text-decoration:none;border:1px solid var(--rule);padding:4px 12px;border-radius:999px;font-size:13.5px;background:var(--sheet)}
+nav a:hover,nav a:focus-visible{border-color:var(--accent);outline:none}
+.sheet{background:var(--sheet);border:1px solid var(--rule);padding:22px;display:grid;gap:18px;scroll-margin-top:16px}
+.sh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:14px;border-bottom:1px solid var(--rule);padding-bottom:14px}
+.kpi{display:flex;flex-wrap:wrap;gap:8px 28px;margin:0}
+.kpi div{display:grid}
+.kpi dt{font-size:12px;color:var(--muted)}
+.kpi dd{margin:0;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.body{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.body{grid-template-columns:1fr}}
+.drawing{min-width:0}
+.plan{width:100%;height:auto;max-height:82vh;display:block;direction:ltr}
+aside{display:grid;gap:14px;min-width:0}
+aside .tw{max-height:420px;overflow-y:auto;border:1px solid var(--rule)}
+aside thead th{position:sticky;top:0;background:var(--sheet)}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:14px}
+.legend li{display:grid;grid-template-columns:18px 1fr auto;gap:8px;align-items:center}
+.legend b{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sw{width:16px;height:16px;border:1px solid var(--lotline)}
+.sw.lot{background:var(--lot)} .sw.road{background:var(--road);border-color:var(--cl)}
+.sw.green{background:var(--green);border-color:var(--hatch)}
+.sw.gate{background:var(--accent);border-color:var(--accent)}
+.sw.park,.sw.plaza{background:var(--common);border-color:var(--commonline)}
+.econ{background:var(--sheet);border:1px solid var(--rule);padding:22px;display:grid;gap:16px;scroll-margin-top:16px}
+.econ .inputs{display:flex;flex-wrap:wrap;gap:12px 28px}
+.econ label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.econ input{font:inherit;font-size:16px;font-weight:700;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:6px 10px;width:13em;font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+.econ input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.econ table td,.econ table th{text-align:center}
+.econ table td:first-child,.econ table th:first-child{text-align:right}
+.econ td.hi{font-weight:800;color:var(--accent)}
+.econ tr.total td{font-weight:800;border-top:2px solid var(--ink)}
+.econ .fine{font-size:12.5px;color:var(--muted);margin:0;max-width:78ch}
+.notes{display:grid;gap:10px;max-width:78ch}
+.notes ul{margin:0;padding-right:20px;display:grid;gap:6px}
+.notes li{color:var(--ink)}
+/* svg */
+.site{fill:var(--sheet)}
+.road{fill:var(--road);stroke:none}
+.cl{fill:none;stroke:var(--cl);stroke-width:.25;stroke-dasharray:2 1.2}
+.lot{fill:var(--lot);stroke:var(--lotline);stroke-width:.35;stroke-linejoin:round}
+.lot:hover{fill:var(--common)}
+.gfill{fill:var(--green)} .ghatch{stroke:var(--hatch);stroke-width:.35}
+.green{stroke:var(--hatch);stroke-width:.3}
+.resv{stroke-width:.4}
+.resv.gate{fill:var(--accent);stroke:var(--accent)}
+.resv.park,.resv.plaza{fill:var(--common);stroke:var(--commonline)}
+.bound{fill:none;stroke:var(--ink);stroke-width:.9;stroke-linejoin:round}
+.ln{fill:var(--ink);font-family:var(--f-body);font-weight:800;text-anchor:middle}
+.la{fill:var(--muted);font-family:var(--f-body);text-anchor:middle}
+.rl{fill:var(--ink);font-family:var(--f-body);font-weight:700;text-anchor:middle}
+.resv.gate+text{fill:var(--ink)}
+.ent{stroke:var(--accent);stroke-width:1.1}
+.ahead{fill:var(--accent)}
+.et{fill:var(--accent);font-family:var(--f-body);font-weight:700;text-anchor:middle;paint-order:stroke;stroke:var(--sheet);stroke-width:.8}
+.nc{fill:var(--sheet);stroke:var(--ink);stroke-width:.35}
+.np{fill:var(--ink)}
+.nt{fill:var(--ink);font-family:var(--f-body);font-weight:800;text-anchor:middle}
+.sb1{fill:var(--ink)} .sb2{fill:none;stroke:var(--ink);stroke-width:.3}
+.court{fill:#6E9F87;stroke:var(--commonline);stroke-width:.3}
+.cline{fill:none;stroke:#F6F8F4;stroke-width:.25}
+.cline2{stroke:#F6F8F4;stroke-width:.25}
+.net{stroke:var(--ink);stroke-width:.35}
+.pond{fill:#4F9BD9;stroke:#2B6CA8;stroke-width:.4}
+.bld{fill:var(--sheet);stroke:var(--commonline);stroke-width:.4}
+.st{fill:var(--muted);font-family:var(--f-body);text-anchor:middle}
+</style>
+<style>:root{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">طرح پیشنهادی تفکیک، معابر داخلی ۷ متری، قطعات زیر ۵۰۰ متر</p>
+      <h1>شهرک‌های ویلایی ولیران</h1>
+      <p class="lede">نسخه بدون زمین جواهری: سه مجموعه جدا، هرکدام با درِ ورودی و نگهبانی مستقل. باغ ولیران از جاده A و زمین‌های دروازه ری و دو هکتاری از جاده B ورودی می‌گیرند. همه ابعاد و مساحت‌ها از روی نقشه‌های ارسالی برداشته و با مساحت سند تطبیق داده شده‌اند.</p>
+    </div>
+    <dl class="totals">
+      <div><dt>جمع قطعات با طرح الف دو هکتاری</dt><dd>۵۹ قطعه</dd></div>
+      <div><dt>جمع قطعات با طرح ب دو هکتاری</dt><dd>۵۷ قطعه</dd></div>
+    </dl>
+    <div class="tw"><table class="sum">
+      <thead><tr><th>زمین</th><th>مساحت (م<sup>۲</sup>)</th><th>قطعات</th><th>سهم قطعات</th><th>سهم معابر</th><th>مشاعات و سبز</th></tr></thead>
+      <tbody><tr><td><a href="#twoha-A">زمین دو هکتاری</a><small>طرح الف: تفکیک ساده</small></td><td>۲۰٬۵۳۶</td><td class="n">۳۷</td><td>۸۳٪</td><td>۱۵٪</td><td>۱٪</td></tr><tr><td><a href="#twoha-B">زمین دو هکتاری</a><small>طرح ب: با مشاعات</small></td><td>۲۰٬۵۳۶</td><td class="n">۳۵</td><td>۷۸٪</td><td>۱۵٪</td><td>۷٪</td></tr><tr><td><a href="#garden">باغ ولیران</a><small>قطعه ۱</small></td><td>۷٬۳۴۴</td><td class="n">۱۳</td><td>۸۷٪</td><td>۱۲٪</td><td>۱٪</td></tr><tr><td><a href="#darvazeh">زمین دروازه ری</a><small>قطعه ۳</small></td><td>۴٬۶۸۳</td><td class="n">۹</td><td>۸۷٪</td><td>۱۳٪</td><td>۱٪</td></tr></tbody>
+    </table></div>
+    <nav aria-label="نقشه‌ها">
+      <a href="#twoha-A">دو هکتاری الف</a><a href="#twoha-B">دو هکتاری ب</a><a href="#garden">باغ ولیران</a><a href="#darvazeh">دروازه ری</a><a href="#econ">جدول اقتصادی</a>
+    </nav>
+  </header>
+  
+<section class="sheet" id="twoha-A">
+  <header class="sh"><div><p class="eyebrow">طرح الف: تفکیک ساده</p><h2>زمین دو هکتاری</h2></div>
+  <dl class="kpi"><div><dt>قطعات</dt><dd>۳۷</dd></div><div><dt>مساحت کل</dt><dd>۲۰٬۵۳۶ <small>م<sup>۲</sup></small></dd></div><div><dt>بازه مساحت قطعات</dt><dd><bdi>۳۸۲ تا ۴۹۵</bdi> <small>م<sup>۲</sup></small></dd></div></dl></header>
+  <div class="body">
+    <div class="drawing"><svg viewBox="0 0 179.8 254.8" class="plan" role="img" aria-label="نقشه تفکیک زمین دو هکتاری" xmlns="http://www.w3.org/2000/svg">
+<defs><pattern id="g-twoha_A" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="3" class="gfill"/><line x1="0" y1="0" x2="0" y2="3" class="ghatch"/></pattern></defs>
+<defs><marker id="ah-twoha_A" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs>
+<polygon points="23.34,23.68 48.23,15.03 58.61,15.03 72.44,15.03 82.81,14.00 92.84,16.07 90.76,19.18 91.80,23.68 94.22,27.48 100.10,28.87 109.78,28.17 127.76,28.87 141.59,28.17 145.74,28.52 156.12,39.24 165.80,55.84 161.65,71.40 155.43,80.73 149.20,92.83 134.68,104.94 138.14,114.62 148.51,136.06 139.86,144.70 134.33,156.11 126.03,167.18 120.16,172.71 110.47,173.75 97.33,170.64 89.38,169.25 81.43,170.64 75.90,173.40 72.44,175.82 73.48,179.63 75.55,189.31 93.53,211.09 99.75,221.81 99.75,240.83 86.27,239.79 55.49,198.99 45.81,185.16 41.66,169.94 38.90,163.03 34.75,155.42 14.00,173.40 14.35,100.44 24.37,94.91 27.49,93.87 33.02,79.70 28.18,70.01 25.41,51.69 24.72,39.93 26.79,32.32" class="site"/>
+<polygon points="85.60,218.23 84.00,218.43 81.60,218.03 79.40,216.83 77.60,214.83 76.80,213.23 76.40,210.83 76.80,208.43 77.60,206.83 68.40,190.63 65.00,178.43 64.80,176.83 64.80,159.83 49.60,158.43 48.40,158.03 47.20,157.03 46.40,154.83 46.40,15.63 48.00,15.03 53.60,15.03 53.60,151.43 68.80,152.83 70.80,153.63 77.40,159.23 109.60,160.63 113.40,160.43 113.40,44.43 112.40,43.83 110.60,41.83 109.80,40.23 109.40,37.83 109.80,35.43 111.00,33.23 113.00,31.43 114.60,30.63 117.00,30.23 119.40,30.63 121.60,31.83 123.40,33.83 124.40,36.23 124.60,37.83 124.20,40.23 123.00,42.43 120.60,44.43 120.60,164.43 120.20,166.03 118.60,167.63 117.00,168.03 75.80,166.43 73.60,165.63 72.20,164.43 72.00,164.63 72.00,176.63 75.60,189.23 76.80,190.83 83.60,203.03 84.20,203.43 86.40,203.63 88.00,204.43 89.40,205.83 91.20,208.43 91.60,210.83 91.20,213.23 90.40,214.83 88.60,216.83" class="road"/>
+<polyline points="50.00,0.83 50.00,154.83" class="cl"/>
+<polyline points="50.00,154.83 68.50,156.33 76.00,162.83 117.00,164.33" class="cl"/>
+<polyline points="117.00,164.33 117.00,37.83" class="cl"/>
+<polyline points="68.50,156.33 68.50,176.83 72.00,189.83 84.00,210.83" class="cl"/>
+<polygon points="113.20,160.43 99.00,159.83 113.20,159.83" class="green" fill="url(#g-twoha_A)"/>
+<polygon points="90.20,215.23 91.40,213.23 91.60,212.23 94.00,211.63 95.20,214.03" class="green" fill="url(#g-twoha_A)"/>
+<polygon points="70.60,219.23 78.40,216.63 79.00,216.63 80.80,217.83 71.40,220.23" class="green" fill="url(#g-twoha_A)"/>
+<polygon points="93.80,211.43 91.60,212.03 91.80,210.83 91.40,208.43" class="green" fill="url(#g-twoha_A)"/>
+<polygon points="88.00,204.23 86.40,203.43 83.80,203.03 77.20,191.23" class="green" fill="url(#g-twoha_A)"/>
+<polygon points="74.40,184.43 72.20,176.63 72.20,164.63 73.60,165.83 75.80,166.63 116.80,168.23 116.80,173.03 110.00,173.83 97.80,170.63 89.80,169.23 81.40,170.63 75.40,173.63 72.40,175.83" class="green" fill="url(#g-twoha_A)"/>
+<polygon points="53.80,20.03 53.80,15.03 58.40,15.03 58.40,20.03" class="resv gate"/>
+<polygon points="24.80,40.43 26.80,32.03 23.40,23.63 46.20,15.63 46.20,40.43" class="lot" data-no="1"><title>قطعه ۱: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="27.00,62.03 25.40,52.23 24.80,40.63 46.20,40.63 46.20,62.03" class="lot" data-no="2"><title>قطعه ۲: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="29.20,89.03 33.00,79.63 28.20,70.23 27.00,62.23 46.20,62.23 46.20,89.23" class="lot" data-no="3"><title>قطعه ۳: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.40,106.23 14.40,100.43 22.80,95.63 27.00,94.03 27.80,93.03 29.20,89.23 46.20,89.43 46.20,106.43" class="lot" data-no="4"><title>قطعه ۴: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.20,120.23 14.40,106.43 46.20,106.63 46.20,120.23" class="lot" data-no="5"><title>قطعه ۵: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.20,134.23 14.20,120.43 46.20,120.43 46.20,134.23" class="lot" data-no="6"><title>قطعه ۶: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.20,148.23 14.20,134.43 46.20,134.43 46.20,148.23" class="lot" data-no="7"><title>قطعه ۷: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.00,173.43 14.00,155.23 14.40,148.23 46.20,148.43 46.40,155.83 47.00,157.03 48.80,158.23 35.60,156.83 34.80,155.43" class="lot" data-no="8"><title>قطعه ۸: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="53.80,30.83 53.80,20.23 58.60,20.03 58.60,15.03 73.40,15.03 81.80,14.03 83.60,14.23 83.60,30.83" class="lot" data-no="9"><title>قطعه ۹: ۴۶۱٫۷ متر مربع</title></polygon>
+<polygon points="53.80,46.43 53.80,31.03 83.60,31.03 83.60,46.23" class="lot" data-no="10"><title>قطعه ۱۰: ۴۶۱٫۷ متر مربع</title></polygon>
+<polygon points="53.80,61.83 53.80,46.63 83.60,46.43 83.60,61.63" class="lot" data-no="11"><title>قطعه ۱۱: ۴۶۱٫۷ متر مربع</title></polygon>
+<polygon points="53.80,77.43 53.80,62.03 83.60,61.83 83.60,77.23" class="lot" data-no="12"><title>قطعه ۱۲: ۴۶۱٫۷ متر مربع</title></polygon>
+<polygon points="53.80,92.83 53.80,77.63 83.60,77.43 83.60,92.63" class="lot" data-no="13"><title>قطعه ۱۳: ۴۶۱٫۷ متر مربع</title></polygon>
+<polygon points="53.80,108.23 53.80,93.03 83.60,92.83 83.60,108.23" class="lot" data-no="14"><title>قطعه ۱۴: ۴۶۱٫۷ متر مربع</title></polygon>
+<polygon points="53.80,123.63 53.80,108.43 83.60,108.43 83.60,123.63" class="lot" data-no="15"><title>قطعه ۱۵: ۴۶۱٫۷ متر مربع</title></polygon>
+<polygon points="53.80,139.03 53.80,123.83 83.60,123.83 83.60,139.03" class="lot" data-no="16"><title>قطعه ۱۶: ۴۶۱٫۷ متر مربع</title></polygon>
+<polygon points="83.60,159.23 77.40,159.03 70.80,153.43 68.80,152.63 53.80,151.43 53.80,139.23 83.60,139.23" class="lot" data-no="17"><title>قطعه ۱۷: ۴۶۱٫۶ متر مربع</title></polygon>
+<polygon points="83.80,14.23 92.80,16.03 90.80,19.63 91.80,23.63 94.20,27.43 99.60,28.83 108.20,28.23 117.00,28.43 116.80,30.23 114.60,30.43 112.40,31.63 110.80,33.23 109.60,35.43 109.20,37.83 109.40,39.43 110.60,42.03 83.80,41.83" class="lot" data-no="18"><title>قطعه ۱۸: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,58.83 83.80,42.03 110.80,42.23 112.40,44.03 113.20,44.43 113.20,58.83 112.80,59.03" class="lot" data-no="19"><title>قطعه ۱۹: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,75.63 83.80,59.03 113.20,59.03 113.20,75.83" class="lot" data-no="20"><title>قطعه ۲۰: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,92.43 83.80,75.83 113.20,76.03 113.20,92.43" class="lot" data-no="21"><title>قطعه ۲۱: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,109.23 83.80,92.63 113.20,92.63 113.20,109.03" class="lot" data-no="22"><title>قطعه ۲۲: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,126.03 83.80,109.43 113.20,109.23 113.20,126.03" class="lot" data-no="23"><title>قطعه ۲۳: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,142.83 83.80,126.23 113.20,126.23 113.20,142.63" class="lot" data-no="24"><title>قطعه ۲۴: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,158.83 83.80,143.03 113.20,142.83 113.20,159.63 94.20,159.83 86.60,159.43" class="lot" data-no="25"><title>قطعه ۲۵: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="117.20,28.43 125.00,28.83 139.40,28.23 145.80,28.43 156.40,39.43 158.80,43.83 121.80,44.03 123.20,42.43 124.40,40.23 124.80,37.83 124.40,35.43 123.20,33.23 121.60,31.63 119.40,30.43 117.20,30.23" class="lot" data-no="26"><title>قطعه ۲۶: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,44.43 121.40,44.03 159.00,44.03 165.60,55.43 121.20,55.43 120.80,55.23" class="lot" data-no="27"><title>قطعه ۲۷: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,66.23 120.80,55.43 160.80,55.43 165.80,55.83 163.00,66.23" class="lot" data-no="28"><title>قطعه ۲۸: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,78.03 120.80,66.43 163.00,66.43 161.80,71.03 157.20,78.23" class="lot" data-no="29"><title>قطعه ۲۹: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,92.83 120.80,78.23 157.00,78.43 155.20,81.03 149.00,93.03" class="lot" data-no="30"><title>قطعه ۳۰: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,118.43 120.80,93.03 148.80,93.23 134.60,105.03 138.20,114.83 140.00,118.23" class="lot" data-no="31"><title>قطعه ۳۱: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,138.03 120.80,118.63 121.20,118.43 140.00,118.43 148.60,135.83 146.60,138.03" class="lot" data-no="32"><title>قطعه ۳۲: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="117.00,173.03 117.00,168.23 119.20,167.43 120.40,166.03 120.80,164.43 120.80,138.23 146.40,138.23 139.80,144.63 134.40,156.03 126.20,167.03 120.20,172.63" class="lot" data-no="33"><title>قطعه ۳۳: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="99.80,240.83 86.20,239.83 71.60,220.43 81.00,217.83 84.00,218.63 86.40,218.23 88.60,217.03 90.20,215.43 95.40,214.03 99.80,221.83" class="lot" data-no="34"><title>قطعه ۳۴: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="35.60,157.03 51.00,158.83 64.60,159.83 64.60,172.43 51.60,172.23 44.20,179.43 41.60,169.83 39.20,163.83" class="lot" data-no="35"><title>قطعه ۳۵: ۳۸۲٫۳ متر مربع</title></polygon>
+<polygon points="52.20,194.43 46.00,185.63 44.20,179.63 51.60,172.43 64.60,172.63 64.80,178.43 68.20,190.23" class="lot" data-no="36"><title>قطعه ۳۶: ۳۸۲٫۳ متر مربع</title></polygon>
+<polygon points="78.80,216.43 70.40,219.03 55.20,198.83 52.40,194.63 68.20,190.43 77.40,206.83 76.40,209.23 76.40,212.43 77.40,214.83" class="lot" data-no="37"><title>قطعه ۳۷: ۳۸۲٫۳ متر مربع</title></polygon>
+<polygon points="23.34,23.68 48.23,15.03 58.61,15.03 72.44,15.03 82.81,14.00 92.84,16.07 90.76,19.18 91.80,23.68 94.22,27.48 100.10,28.87 109.78,28.17 127.76,28.87 141.59,28.17 145.74,28.52 156.12,39.24 165.80,55.84 161.65,71.40 155.43,80.73 149.20,92.83 134.68,104.94 138.14,114.62 148.51,136.06 139.86,144.70 134.33,156.11 126.03,167.18 120.16,172.71 110.47,173.75 97.33,170.64 89.38,169.25 81.43,170.64 75.90,173.40 72.44,175.82 73.48,179.63 75.55,189.31 93.53,211.09 99.75,221.81 99.75,240.83 86.27,239.79 55.49,198.99 45.81,185.16 41.66,169.94 38.90,163.03 34.75,155.42 14.00,173.40 14.35,100.44 24.37,94.91 27.49,93.87 33.02,79.70 28.18,70.01 25.41,51.69 24.72,39.93 26.79,32.32" class="bound"/>
+<text x="36.4" y="29.3" class="ln" font-size="4.00">۱</text>
+<text x="36.4" y="33.4" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="35.9" y="50.7" class="ln" font-size="4.00">۲</text>
+<text x="35.9" y="54.8" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="37.9" y="74.5" class="ln" font-size="4.00">۳</text>
+<text x="37.9" y="78.7" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="32.6" y="98.5" class="ln" font-size="4.00">۴</text>
+<text x="32.6" y="102.6" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="30.3" y="113.0" class="ln" font-size="4.00">۵</text>
+<text x="30.3" y="117.1" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="30.2" y="127.0" class="ln" font-size="4.00">۶</text>
+<text x="30.2" y="131.1" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="30.2" y="140.9" class="ln" font-size="4.00">۷</text>
+<text x="30.2" y="145.0" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="26.9" y="155.8" class="ln" font-size="4.00">۸</text>
+<text x="26.9" y="159.9" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="69.5" y="22.7" class="ln" font-size="4.00">۹</text>
+<text x="69.5" y="26.8" class="la" font-size="2.62">۴۶۱٫۷</text>
+<text x="68.7" y="38.3" class="ln" font-size="4.00">۱۰</text>
+<text x="68.7" y="42.4" class="la" font-size="2.62">۴۶۱٫۷</text>
+<text x="68.7" y="53.8" class="ln" font-size="4.00">۱۱</text>
+<text x="68.7" y="57.9" class="la" font-size="2.62">۴۶۱٫۷</text>
+<text x="68.7" y="69.2" class="ln" font-size="4.00">۱۲</text>
+<text x="68.7" y="73.3" class="la" font-size="2.62">۴۶۱٫۷</text>
+<text x="68.7" y="84.7" class="ln" font-size="4.00">۱۳</text>
+<text x="68.7" y="88.8" class="la" font-size="2.62">۴۶۱٫۷</text>
+<text x="68.7" y="100.0" class="ln" font-size="4.00">۱۴</text>
+<text x="68.7" y="104.2" class="la" font-size="2.62">۴۶۱٫۷</text>
+<text x="68.7" y="115.6" class="ln" font-size="4.00">۱۵</text>
+<text x="68.7" y="119.7" class="la" font-size="2.62">۴۶۱٫۷</text>
+<text x="68.7" y="131.0" class="ln" font-size="4.00">۱۶</text>
+<text x="68.7" y="135.1" class="la" font-size="2.62">۴۶۱٫۷</text>
+<text x="70.3" y="146.8" class="ln" font-size="4.00">۱۷</text>
+<text x="70.3" y="150.9" class="la" font-size="2.62">۴۶۱٫۶</text>
+<text x="95.5" y="31.4" class="ln" font-size="4.00">۱۸</text>
+<text x="95.5" y="35.5" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.4" y="50.1" class="ln" font-size="4.00">۱۹</text>
+<text x="98.4" y="54.2" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="66.9" class="ln" font-size="4.00">۲۰</text>
+<text x="98.5" y="71.0" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="83.7" class="ln" font-size="4.00">۲۱</text>
+<text x="98.5" y="87.8" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="100.5" class="ln" font-size="4.00">۲۲</text>
+<text x="98.5" y="104.6" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="117.3" class="ln" font-size="4.00">۲۳</text>
+<text x="98.5" y="121.4" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="134.1" class="ln" font-size="4.00">۲۴</text>
+<text x="98.5" y="138.2" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="150.9" class="ln" font-size="4.00">۲۵</text>
+<text x="98.5" y="155.0" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="138.0" y="36.2" class="ln" font-size="4.00">۲۶</text>
+<text x="138.0" y="40.3" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="141.6" y="49.5" class="ln" font-size="4.00">۲۷</text>
+<text x="141.6" y="53.6" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="142.6" y="60.4" class="ln" font-size="4.00">۲۸</text>
+<text x="142.6" y="64.5" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="140.8" y="71.7" class="ln" font-size="4.00">۲۹</text>
+<text x="140.8" y="75.8" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="137.0" y="84.9" class="ln" font-size="4.00">۳۰</text>
+<text x="137.0" y="89.0" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="130.5" y="104.2" class="ln" font-size="4.00">۳۱</text>
+<text x="130.5" y="108.3" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="132.9" y="128.4" class="ln" font-size="4.00">۳۲</text>
+<text x="132.9" y="132.5" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="128.6" y="150.8" class="ln" font-size="4.00">۳۳</text>
+<text x="128.6" y="154.9" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="89.0" y="227.1" class="ln" font-size="4.00">۳۴</text>
+<text x="89.0" y="231.2" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="51.0" y="165.6" class="ln" font-size="4.00">۳۵</text>
+<text x="51.0" y="169.7" class="la" font-size="2.62">۳۸۲٫۳</text>
+<text x="56.3" y="182.4" class="ln" font-size="4.00">۳۶</text>
+<text x="56.3" y="186.5" class="la" font-size="2.62">۳۸۲٫۳</text>
+<text x="67.0" y="203.3" class="ln" font-size="4.00">۳۷</text>
+<text x="67.0" y="207.4" class="la" font-size="2.62">۳۸۲٫۳</text>
+<line x1="50.0" y1="-1.2" x2="50.0" y2="12.8" class="ent" marker-end="url(#ah-twoha_A)"/>
+<text x="50.0" y="4.2" class="et" direction="rtl" font-size="3.36">ورودی از جاده B</text>
+<g transform="translate(170.8,9.0) rotate(0)" class="north"><circle r="5.2" class="nc"/><path d="M0,-7.5 L2.2,1.5 L0,0 L-2.2,1.5 z" class="np"/><text y="4.3" class="nt" font-size="3.2">N</text></g>
+<g class="sbar"><rect x="6" y="247.63000000000002" width="10" height="1.2" class="sb1"/><rect x="16" y="247.63000000000002" width="10" height="1.2" class="sb2"/><text x="6" y="246.43" font-size="2.6" class="st">۰</text><text x="26" y="246.43" font-size="2.6" class="st">۲۰</text><text x="30" y="248.73000000000002" font-size="2.6" class="st" direction="rtl">متر</text></g>
+</svg></div>
+    <aside>
+      <h3>تقسیم زمین</h3>
+      <ul class="legend">
+        <li><span class="sw lot"></span>قطعات ویلایی<b><bdi>۱۷٬۱۲۶</bdi> م<sup>۲</sup>، <bdi>۸۳٪</bdi></b></li>
+        <li><span class="sw road"></span>معابر ۷ متری و دوربرگردان<b><bdi>۳٬۱۱۰</bdi> م<sup>۲</sup>، <bdi>۱۵٪</bdi></b></li>
+        <li><span class="sw gate"></span>نگهبانی<b><bdi>۲۵</bdi> م<sup>۲</sup></b></li>
+        <li><span class="sw green"></span>فضای سبز باقی‌مانده<b><bdi>۲۷۵</bdi> م<sup>۲</sup>، <bdi>۱٪</bdi></b></li>
+      </ul>
+      <h3>جدول قطعات <small>(متر مربع)</small></h3>
+      <div class="tw"><table><thead><tr><th>قطعه</th><th>مساحت</th></tr></thead><tbody><tr><td>۱</td><td>۴۴۶٫۳</td></tr><tr><td>۲</td><td>۴۴۶٫۳</td></tr><tr><td>۳</td><td>۴۴۶٫۳</td></tr><tr><td>۴</td><td>۴۴۶٫۳</td></tr><tr><td>۵</td><td>۴۴۶٫۳</td></tr><tr><td>۶</td><td>۴۴۶٫۳</td></tr><tr><td>۷</td><td>۴۴۶٫۳</td></tr><tr><td>۸</td><td>۴۴۶٫۳</td></tr><tr><td>۹</td><td>۴۶۱٫۷</td></tr><tr><td>۱۰</td><td>۴۶۱٫۷</td></tr><tr><td>۱۱</td><td>۴۶۱٫۷</td></tr><tr><td>۱۲</td><td>۴۶۱٫۷</td></tr><tr><td>۱۳</td><td>۴۶۱٫۷</td></tr><tr><td>۱۴</td><td>۴۶۱٫۷</td></tr><tr><td>۱۵</td><td>۴۶۱٫۷</td></tr><tr><td>۱۶</td><td>۴۶۱٫۷</td></tr><tr><td>۱۷</td><td>۴۶۱٫۶</td></tr><tr><td>۱۸</td><td>۴۹۵٫۱</td></tr><tr><td>۱۹</td><td>۴۹۵٫۱</td></tr><tr><td>۲۰</td><td>۴۹۵٫۱</td></tr><tr><td>۲۱</td><td>۴۹۵٫۱</td></tr><tr><td>۲۲</td><td>۴۹۵٫۱</td></tr><tr><td>۲۳</td><td>۴۹۵٫۱</td></tr><tr><td>۲۴</td><td>۴۹۵٫۱</td></tr><tr><td>۲۵</td><td>۴۹۵٫۱</td></tr><tr><td>۲۶</td><td>۴۷۴٫۷</td></tr><tr><td>۲۷</td><td>۴۷۴٫۷</td></tr><tr><td>۲۸</td><td>۴۷۴٫۷</td></tr><tr><td>۲۹</td><td>۴۷۴٫۷</td></tr><tr><td>۳۰</td><td>۴۷۴٫۷</td></tr><tr><td>۳۱</td><td>۴۷۴٫۷</td></tr><tr><td>۳۲</td><td>۴۷۴٫۷</td></tr><tr><td>۳۳</td><td>۴۷۴٫۷</td></tr><tr><td>۳۴</td><td>۴۹۵٫۱</td></tr><tr><td>۳۵</td><td>۳۸۲٫۳</td></tr><tr><td>۳۶</td><td>۳۸۲٫۳</td></tr><tr><td>۳۷</td><td>۳۸۲٫۳</td></tr></tbody></table></div>
+    </aside>
+  </div>
+</section>
+<section class="sheet" id="twoha-B">
+  <header class="sh"><div><p class="eyebrow">طرح ب: با مشاعات</p><h2>زمین دو هکتاری</h2></div>
+  <dl class="kpi"><div><dt>قطعات</dt><dd>۳۵</dd></div><div><dt>مساحت کل</dt><dd>۲۰٬۵۳۶ <small>م<sup>۲</sup></small></dd></div><div><dt>بازه مساحت قطعات</dt><dd><bdi>۳۸۲ تا ۴۹۵</bdi> <small>م<sup>۲</sup></small></dd></div></dl></header>
+  <div class="body">
+    <div class="drawing"><svg viewBox="0 0 179.8 254.8" class="plan" role="img" aria-label="نقشه تفکیک زمین دو هکتاری" xmlns="http://www.w3.org/2000/svg">
+<defs><pattern id="g-twoha_B" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="3" class="gfill"/><line x1="0" y1="0" x2="0" y2="3" class="ghatch"/></pattern></defs>
+<defs><marker id="ah-twoha_B" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs>
+<polygon points="23.34,23.68 48.23,15.03 58.61,15.03 72.44,15.03 82.81,14.00 92.84,16.07 90.76,19.18 91.80,23.68 94.22,27.48 100.10,28.87 109.78,28.17 127.76,28.87 141.59,28.17 145.74,28.52 156.12,39.24 165.80,55.84 161.65,71.40 155.43,80.73 149.20,92.83 134.68,104.94 138.14,114.62 148.51,136.06 139.86,144.70 134.33,156.11 126.03,167.18 120.16,172.71 110.47,173.75 97.33,170.64 89.38,169.25 81.43,170.64 75.90,173.40 72.44,175.82 73.48,179.63 75.55,189.31 93.53,211.09 99.75,221.81 99.75,240.83 86.27,239.79 55.49,198.99 45.81,185.16 41.66,169.94 38.90,163.03 34.75,155.42 14.00,173.40 14.35,100.44 24.37,94.91 27.49,93.87 33.02,79.70 28.18,70.01 25.41,51.69 24.72,39.93 26.79,32.32" class="site"/>
+<polygon points="85.60,218.23 84.00,218.43 81.60,218.03 79.40,216.83 77.60,214.83 76.80,213.23 76.40,210.83 76.80,208.43 77.60,206.83 68.40,190.63 65.00,178.43 64.80,176.83 64.80,159.83 49.60,158.43 48.40,158.03 47.20,157.03 46.40,154.83 46.40,15.63 48.00,15.03 53.60,15.03 53.60,151.43 68.80,152.83 70.80,153.63 77.40,159.23 109.60,160.63 113.40,160.43 113.40,44.43 112.40,43.83 110.60,41.83 109.80,40.23 109.40,37.83 109.80,35.43 111.00,33.23 113.00,31.43 114.60,30.63 117.00,30.23 119.40,30.63 121.60,31.83 123.40,33.83 124.40,36.23 124.60,37.83 124.20,40.23 123.00,42.43 120.60,44.43 120.60,164.43 120.20,166.03 118.60,167.63 117.00,168.03 75.80,166.43 73.60,165.63 72.20,164.43 72.00,164.63 72.00,176.63 75.60,189.23 76.80,190.83 83.60,203.03 84.20,203.43 86.40,203.63 88.00,204.43 89.40,205.83 91.20,208.43 91.60,210.83 91.20,213.23 90.40,214.83 88.60,216.83" class="road"/>
+<polyline points="50.00,0.83 50.00,154.83" class="cl"/>
+<polyline points="50.00,154.83 68.50,156.33 76.00,162.83 117.00,164.33" class="cl"/>
+<polyline points="117.00,164.33 117.00,37.83" class="cl"/>
+<polyline points="68.50,156.33 68.50,176.83 72.00,189.83 84.00,210.83" class="cl"/>
+<polygon points="113.20,160.43 89.00,159.63 85.40,159.23 112.40,159.03 113.20,159.23" class="green" fill="url(#g-twoha_B)"/>
+<polygon points="90.20,215.23 91.40,213.23 91.60,212.23 94.00,211.63 95.20,214.03" class="green" fill="url(#g-twoha_B)"/>
+<polygon points="70.60,219.23 78.40,216.63 79.00,216.63 80.80,217.83 71.40,220.23" class="green" fill="url(#g-twoha_B)"/>
+<polygon points="93.80,211.43 91.60,212.03 91.80,210.83 91.40,208.43" class="green" fill="url(#g-twoha_B)"/>
+<polygon points="88.00,204.23 86.40,203.43 83.80,203.03 77.20,191.23" class="green" fill="url(#g-twoha_B)"/>
+<polygon points="74.40,184.43 72.20,176.63 72.20,164.63 73.60,165.83 75.80,166.63 116.80,168.23 116.80,173.03 110.00,173.83 97.80,170.63 89.80,169.23 81.40,170.63 75.40,173.63 72.40,175.83" class="green" fill="url(#g-twoha_B)"/>
+<polygon points="53.80,20.03 53.80,15.03 58.40,15.03 58.40,20.03" class="resv gate"/>
+<polygon points="53.80,91.83 53.80,74.83 113.20,74.83 113.20,91.83" class="resv park"/>
+<polygon points="24.80,40.43 26.80,32.03 23.40,23.63 46.20,15.63 46.20,40.43" class="lot" data-no="1"><title>قطعه ۱: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="27.00,62.03 25.40,52.23 24.80,40.63 46.20,40.63 46.20,62.03" class="lot" data-no="2"><title>قطعه ۲: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="29.20,89.03 33.00,79.63 28.20,70.23 27.00,62.23 46.20,62.23 46.20,89.23" class="lot" data-no="3"><title>قطعه ۳: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.40,106.23 14.40,100.43 22.80,95.63 27.00,94.03 27.80,93.03 29.20,89.23 46.20,89.43 46.20,106.43" class="lot" data-no="4"><title>قطعه ۴: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.20,120.23 14.40,106.43 46.20,106.63 46.20,120.23" class="lot" data-no="5"><title>قطعه ۵: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.20,134.23 14.20,120.43 46.20,120.43 46.20,134.23" class="lot" data-no="6"><title>قطعه ۶: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.20,148.23 14.20,134.43 46.20,134.43 46.20,148.23" class="lot" data-no="7"><title>قطعه ۷: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="14.00,173.43 14.00,155.23 14.40,148.23 46.20,148.43 46.40,155.83 47.00,157.03 48.80,158.23 35.60,156.83 34.80,155.43" class="lot" data-no="8"><title>قطعه ۸: ۴۴۶٫۳ متر مربع</title></polygon>
+<polygon points="53.80,30.23 53.80,20.23 58.60,20.03 58.60,15.03 73.40,15.03 81.80,14.03 83.60,14.23 83.60,30.23" class="lot" data-no="9"><title>قطعه ۹: ۴۴۲٫۱ متر مربع</title></polygon>
+<polygon points="53.80,45.03 53.80,30.43 83.60,30.43 83.60,45.23" class="lot" data-no="10"><title>قطعه ۱۰: ۴۴۲٫۱ متر مربع</title></polygon>
+<polygon points="83.60,59.83 53.80,59.83 53.80,45.23 83.60,45.43" class="lot" data-no="11"><title>قطعه ۱۱: ۴۴۲٫۱ متر مربع</title></polygon>
+<polygon points="53.80,74.63 53.80,60.03 83.60,60.03 83.60,74.63" class="lot" data-no="12"><title>قطعه ۱۲: ۴۴۲٫۱ متر مربع</title></polygon>
+<polygon points="53.80,107.43 53.80,92.03 83.60,92.03 83.60,107.43" class="lot" data-no="13"><title>قطعه ۱۳: ۴۶۸٫۳ متر مربع</title></polygon>
+<polygon points="53.80,123.03 53.80,107.63 83.60,107.63 83.60,123.03" class="lot" data-no="14"><title>قطعه ۱۴: ۴۶۸٫۳ متر مربع</title></polygon>
+<polygon points="53.80,138.83 53.80,123.23 83.60,123.23 83.60,138.83" class="lot" data-no="15"><title>قطعه ۱۵: ۴۶۸٫۳ متر مربع</title></polygon>
+<polygon points="83.60,159.23 77.40,159.03 70.80,153.43 68.80,152.63 53.80,151.43 53.80,139.03 83.60,139.03" class="lot" data-no="16"><title>قطعه ۱۶: ۴۶۸٫۳ متر مربع</title></polygon>
+<polygon points="83.80,108.63 83.80,92.03 113.20,92.03 113.20,108.63" class="lot" data-no="17"><title>قطعه ۱۷: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,125.43 83.80,108.83 113.20,108.83 113.20,125.43" class="lot" data-no="18"><title>قطعه ۱۸: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,142.23 83.80,125.63 113.20,125.63 113.20,142.23" class="lot" data-no="19"><title>قطعه ۱۹: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,158.83 83.80,142.43 113.20,142.43 113.20,159.03" class="lot" data-no="20"><title>قطعه ۲۰: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="83.80,14.23 92.80,16.03 90.80,19.63 91.80,23.63 94.20,27.43 99.60,28.83 108.20,28.23 117.00,28.43 116.80,30.23 114.60,30.43 113.00,31.23 110.40,33.83 109.60,35.43 109.20,37.83 109.60,40.23 110.20,41.43 83.80,41.43" class="lot" data-no="21"><title>قطعه ۲۱: ۴۸۵٫۲ متر مربع</title></polygon>
+<polygon points="83.80,58.23 83.80,41.63 110.40,41.63 110.80,42.43 113.20,44.43 113.20,58.23" class="lot" data-no="22"><title>قطعه ۲۲: ۴۸۵٫۲ متر مربع</title></polygon>
+<polygon points="83.80,74.63 83.80,58.43 113.20,58.43 113.20,74.63" class="lot" data-no="23"><title>قطعه ۲۳: ۴۸۵٫۱ متر مربع</title></polygon>
+<polygon points="117.20,28.43 125.00,28.83 139.40,28.23 145.80,28.43 156.40,39.43 158.80,43.83 121.80,44.03 123.20,42.43 124.40,40.23 124.80,37.83 124.40,35.43 123.20,33.23 121.60,31.63 119.40,30.43 117.20,30.23" class="lot" data-no="24"><title>قطعه ۲۴: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,44.43 121.40,44.03 159.00,44.03 165.60,55.43 121.20,55.43 120.80,55.23" class="lot" data-no="25"><title>قطعه ۲۵: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,66.23 120.80,55.43 160.80,55.43 165.80,55.83 163.00,66.23" class="lot" data-no="26"><title>قطعه ۲۶: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,78.03 120.80,66.43 163.00,66.43 161.80,71.03 157.20,78.23" class="lot" data-no="27"><title>قطعه ۲۷: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,92.83 120.80,78.23 157.00,78.43 155.20,81.03 149.00,93.03" class="lot" data-no="28"><title>قطعه ۲۸: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,118.43 120.80,93.03 148.80,93.23 134.60,105.03 138.20,114.83 140.00,118.23" class="lot" data-no="29"><title>قطعه ۲۹: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="120.80,138.03 120.80,118.63 121.20,118.43 140.00,118.43 148.60,135.83 146.60,138.03" class="lot" data-no="30"><title>قطعه ۳۰: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="117.00,173.03 117.00,168.23 119.20,167.43 120.40,166.03 120.80,164.43 120.80,138.23 146.40,138.23 139.80,144.63 134.40,156.03 126.20,167.03 120.20,172.63" class="lot" data-no="31"><title>قطعه ۳۱: ۴۷۴٫۷ متر مربع</title></polygon>
+<polygon points="99.80,240.83 86.20,239.83 71.60,220.43 81.00,217.83 84.00,218.63 86.40,218.23 88.60,217.03 90.20,215.43 95.40,214.03 99.80,221.83" class="lot" data-no="32"><title>قطعه ۳۲: ۴۹۵٫۱ متر مربع</title></polygon>
+<polygon points="35.60,157.03 51.00,158.83 64.60,159.83 64.60,172.43 51.60,172.23 44.20,179.43 41.60,169.83 39.20,163.83" class="lot" data-no="33"><title>قطعه ۳۳: ۳۸۲٫۳ متر مربع</title></polygon>
+<polygon points="52.20,194.43 46.00,185.63 44.20,179.63 51.60,172.43 64.60,172.63 64.80,178.43 68.20,190.23" class="lot" data-no="34"><title>قطعه ۳۴: ۳۸۲٫۳ متر مربع</title></polygon>
+<polygon points="78.80,216.43 70.40,219.03 55.20,198.83 52.40,194.63 68.20,190.43 77.40,206.83 76.40,209.23 76.40,212.43 77.40,214.83" class="lot" data-no="35"><title>قطعه ۳۵: ۳۸۲٫۳ متر مربع</title></polygon>
+<polygon points="23.34,23.68 48.23,15.03 58.61,15.03 72.44,15.03 82.81,14.00 92.84,16.07 90.76,19.18 91.80,23.68 94.22,27.48 100.10,28.87 109.78,28.17 127.76,28.87 141.59,28.17 145.74,28.52 156.12,39.24 165.80,55.84 161.65,71.40 155.43,80.73 149.20,92.83 134.68,104.94 138.14,114.62 148.51,136.06 139.86,144.70 134.33,156.11 126.03,167.18 120.16,172.71 110.47,173.75 97.33,170.64 89.38,169.25 81.43,170.64 75.90,173.40 72.44,175.82 73.48,179.63 75.55,189.31 93.53,211.09 99.75,221.81 99.75,240.83 86.27,239.79 55.49,198.99 45.81,185.16 41.66,169.94 38.90,163.03 34.75,155.42 14.00,173.40 14.35,100.44 24.37,94.91 27.49,93.87 33.02,79.70 28.18,70.01 25.41,51.69 24.72,39.93 26.79,32.32" class="bound"/>
+<text x="36.4" y="29.3" class="ln" font-size="4.00">۱</text>
+<text x="36.4" y="33.4" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="35.9" y="50.7" class="ln" font-size="4.00">۲</text>
+<text x="35.9" y="54.8" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="37.9" y="74.5" class="ln" font-size="4.00">۳</text>
+<text x="37.9" y="78.7" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="32.6" y="98.5" class="ln" font-size="4.00">۴</text>
+<text x="32.6" y="102.6" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="30.3" y="113.0" class="ln" font-size="4.00">۵</text>
+<text x="30.3" y="117.1" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="30.2" y="127.0" class="ln" font-size="4.00">۶</text>
+<text x="30.2" y="131.1" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="30.2" y="140.9" class="ln" font-size="4.00">۷</text>
+<text x="30.2" y="145.0" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="26.9" y="155.8" class="ln" font-size="4.00">۸</text>
+<text x="26.9" y="159.9" class="la" font-size="2.62">۴۴۶٫۳</text>
+<text x="69.6" y="22.4" class="ln" font-size="4.00">۹</text>
+<text x="69.6" y="26.5" class="la" font-size="2.62">۴۴۲٫۱</text>
+<text x="68.7" y="37.3" class="ln" font-size="4.00">۱۰</text>
+<text x="68.7" y="41.4" class="la" font-size="2.62">۴۴۲٫۱</text>
+<text x="68.7" y="52.1" class="ln" font-size="4.00">۱۱</text>
+<text x="68.7" y="56.2" class="la" font-size="2.62">۴۴۲٫۱</text>
+<text x="68.7" y="66.9" class="ln" font-size="4.00">۱۲</text>
+<text x="68.7" y="71.0" class="la" font-size="2.62">۴۴۲٫۱</text>
+<text x="68.7" y="99.3" class="ln" font-size="4.00">۱۳</text>
+<text x="68.7" y="103.4" class="la" font-size="2.62">۴۶۸٫۳</text>
+<text x="68.7" y="115.0" class="ln" font-size="4.00">۱۴</text>
+<text x="68.7" y="119.1" class="la" font-size="2.62">۴۶۸٫۳</text>
+<text x="68.7" y="130.7" class="ln" font-size="4.00">۱۵</text>
+<text x="68.7" y="134.8" class="la" font-size="2.62">۴۶۸٫۳</text>
+<text x="70.3" y="146.6" class="ln" font-size="4.00">۱۶</text>
+<text x="70.3" y="150.7" class="la" font-size="2.62">۴۶۸٫۳</text>
+<text x="98.5" y="99.9" class="ln" font-size="4.00">۱۷</text>
+<text x="98.5" y="104.0" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="116.7" class="ln" font-size="4.00">۱۸</text>
+<text x="98.5" y="120.8" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="133.5" class="ln" font-size="4.00">۱۹</text>
+<text x="98.5" y="137.6" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="98.5" y="150.3" class="ln" font-size="4.00">۲۰</text>
+<text x="98.5" y="154.4" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="95.4" y="31.2" class="ln" font-size="4.00">۲۱</text>
+<text x="95.4" y="35.3" class="la" font-size="2.62">۴۸۵٫۲</text>
+<text x="98.4" y="49.6" class="ln" font-size="4.00">۲۲</text>
+<text x="98.4" y="53.7" class="la" font-size="2.62">۴۸۵٫۲</text>
+<text x="98.5" y="66.0" class="ln" font-size="4.00">۲۳</text>
+<text x="98.5" y="70.2" class="la" font-size="2.62">۴۸۵٫۱</text>
+<text x="138.0" y="36.2" class="ln" font-size="4.00">۲۴</text>
+<text x="138.0" y="40.3" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="141.6" y="49.5" class="ln" font-size="4.00">۲۵</text>
+<text x="141.6" y="53.6" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="142.6" y="60.4" class="ln" font-size="4.00">۲۶</text>
+<text x="142.6" y="64.5" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="140.8" y="71.7" class="ln" font-size="4.00">۲۷</text>
+<text x="140.8" y="75.8" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="137.0" y="84.9" class="ln" font-size="4.00">۲۸</text>
+<text x="137.0" y="89.0" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="130.5" y="104.2" class="ln" font-size="4.00">۲۹</text>
+<text x="130.5" y="108.3" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="132.9" y="128.4" class="ln" font-size="4.00">۳۰</text>
+<text x="132.9" y="132.5" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="128.6" y="150.8" class="ln" font-size="4.00">۳۱</text>
+<text x="128.6" y="154.9" class="la" font-size="2.62">۴۷۴٫۷</text>
+<text x="89.0" y="227.1" class="ln" font-size="4.00">۳۲</text>
+<text x="89.0" y="231.2" class="la" font-size="2.62">۴۹۵٫۱</text>
+<text x="51.0" y="165.6" class="ln" font-size="4.00">۳۳</text>
+<text x="51.0" y="169.7" class="la" font-size="2.62">۳۸۲٫۳</text>
+<text x="56.3" y="182.4" class="ln" font-size="4.00">۳۴</text>
+<text x="56.3" y="186.5" class="la" font-size="2.62">۳۸۲٫۳</text>
+<text x="67.0" y="203.3" class="ln" font-size="4.00">۳۵</text>
+<text x="67.0" y="207.4" class="la" font-size="2.62">۳۸۲٫۳</text>
+<rect x="54.00" y="74.76" width="34.75" height="17.07" class="court"/>
+<rect x="59.49" y="77.81" width="23.77" height="10.97" class="cline"/>
+<rect x="59.49" y="79.18" width="23.77" height="8.23" class="cline"/>
+<rect x="64.97" y="79.18" width="12.80" height="8.23" class="cline"/>
+<line x1="71.38" y1="77.10" x2="71.38" y2="89.50" class="net"/>
+<line x1="64.97" y1="83.30" x2="77.78" y2="83.30" class="cline2"/>
+<rect x="103.00" y="77.33" width="9.00" height="12.00" class="bld"/>
+<path d="M101.81,83.53 L101.78,82.31 L101.32,81.22 L100.64,80.34 L99.93,79.60 L99.25,78.91 L98.53,78.30 L97.72,77.88 L96.85,77.75 L96.00,77.84 L95.18,77.97 L94.31,78.00 L93.33,78.02 L92.29,78.25 L91.39,78.92 L90.89,80.01 L90.85,81.30 L91.12,82.50 L91.41,83.53 L91.54,84.47 L91.55,85.46 L91.63,86.54 L91.96,87.57 L92.56,88.41 L93.33,89.04 L94.17,89.54 L95.05,89.96 L96.00,90.24 L96.98,90.18 L97.87,89.66 L98.53,88.76 L98.97,87.75 L99.36,86.89 L99.90,86.21 L100.62,85.54 L101.36,84.66 Z" class="pond"/>
+<text x="71.38" y="76.16" class="rl" direction="rtl" font-size="1.9">زمین تنیس</text>
+<text x="96.00" y="83.83" class="rl" direction="rtl" font-size="1.9">برکه</text>
+<text x="107.50" y="83.83" class="rl" direction="rtl" font-size="1.9">کافی‌شاپ</text>
+<line x1="50.0" y1="-1.2" x2="50.0" y2="12.8" class="ent" marker-end="url(#ah-twoha_B)"/>
+<text x="50.0" y="4.2" class="et" direction="rtl" font-size="3.36">ورودی از جاده B</text>
+<g transform="translate(170.8,9.0) rotate(0)" class="north"><circle r="5.2" class="nc"/><path d="M0,-7.5 L2.2,1.5 L0,0 L-2.2,1.5 z" class="np"/><text y="4.3" class="nt" font-size="3.2">N</text></g>
+<g class="sbar"><rect x="6" y="247.63000000000002" width="10" height="1.2" class="sb1"/><rect x="16" y="247.63000000000002" width="10" height="1.2" class="sb2"/><text x="6" y="246.43" font-size="2.6" class="st">۰</text><text x="26" y="246.43" font-size="2.6" class="st">۲۰</text><text x="30" y="248.73000000000002" font-size="2.6" class="st" direction="rtl">متر</text></g>
+</svg></div>
+    <aside>
+      <h3>تقسیم زمین</h3>
+      <ul class="legend">
+        <li><span class="sw lot"></span>قطعات ویلایی<b><bdi>۱۶٬۰۸۸</bdi> م<sup>۲</sup>، <bdi>۷۸٪</bdi></b></li>
+        <li><span class="sw road"></span>معابر ۷ متری و دوربرگردان<b><bdi>۳٬۱۱۰</bdi> م<sup>۲</sup>، <bdi>۱۵٪</bdi></b></li>
+        <li><span class="sw gate"></span>نگهبانی<b><bdi>۲۵</bdi> م<sup>۲</sup></b></li><li><span class="sw park"></span>مشاعات: زمین تنیس، برکه و کافی‌شاپ<b><bdi>۱٬۰۲۱</bdi> م<sup>۲</sup></b></li>
+        <li><span class="sw green"></span>فضای سبز باقی‌مانده<b><bdi>۲۹۳</bdi> م<sup>۲</sup>، <bdi>۱٪</bdi></b></li>
+      </ul>
+      <h3>جدول قطعات <small>(متر مربع)</small></h3>
+      <div class="tw"><table><thead><tr><th>قطعه</th><th>مساحت</th></tr></thead><tbody><tr><td>۱</td><td>۴۴۶٫۳</td></tr><tr><td>۲</td><td>۴۴۶٫۳</td></tr><tr><td>۳</td><td>۴۴۶٫۳</td></tr><tr><td>۴</td><td>۴۴۶٫۳</td></tr><tr><td>۵</td><td>۴۴۶٫۳</td></tr><tr><td>۶</td><td>۴۴۶٫۳</td></tr><tr><td>۷</td><td>۴۴۶٫۳</td></tr><tr><td>۸</td><td>۴۴۶٫۳</td></tr><tr><td>۹</td><td>۴۴۲٫۱</td></tr><tr><td>۱۰</td><td>۴۴۲٫۱</td></tr><tr><td>۱۱</td><td>۴۴۲٫۱</td></tr><tr><td>۱۲</td><td>۴۴۲٫۱</td></tr><tr><td>۱۳</td><td>۴۶۸٫۳</td></tr><tr><td>۱۴</td><td>۴۶۸٫۳</td></tr><tr><td>۱۵</td><td>۴۶۸٫۳</td></tr><tr><td>۱۶</td><td>۴۶۸٫۳</td></tr><tr><td>۱۷</td><td>۴۹۵٫۱</td></tr><tr><td>۱۸</td><td>۴۹۵٫۱</td></tr><tr><td>۱۹</td><td>۴۹۵٫۱</td></tr><tr><td>۲۰</td><td>۴۹۵٫۱</td></tr><tr><td>۲۱</td><td>۴۸۵٫۲</td></tr><tr><td>۲۲</td><td>۴۸۵٫۲</td></tr><tr><td>۲۳</td><td>۴۸۵٫۱</td></tr><tr><td>۲۴</td><td>۴۷۴٫۷</td></tr><tr><td>۲۵</td><td>۴۷۴٫۷</td></tr><tr><td>۲۶</td><td>۴۷۴٫۷</td></tr><tr><td>۲۷</td><td>۴۷۴٫۷</td></tr><tr><td>۲۸</td><td>۴۷۴٫۷</td></tr><tr><td>۲۹</td><td>۴۷۴٫۷</td></tr><tr><td>۳۰</td><td>۴۷۴٫۷</td></tr><tr><td>۳۱</td><td>۴۷۴٫۷</td></tr><tr><td>۳۲</td><td>۴۹۵٫۱</td></tr><tr><td>۳۳</td><td>۳۸۲٫۳</td></tr><tr><td>۳۴</td><td>۳۸۲٫۳</td></tr><tr><td>۳۵</td><td>۳۸۲٫۳</td></tr></tbody></table></div>
+    </aside>
+  </div>
+</section>
+<section class="sheet" id="garden">
+  <header class="sh"><div><p class="eyebrow">قطعه ۱</p><h2>باغ ولیران</h2></div>
+  <dl class="kpi"><div><dt>قطعات</dt><dd>۱۳</dd></div><div><dt>مساحت کل</dt><dd>۷٬۳۴۴ <small>م<sup>۲</sup></small></dd></div><div><dt>بازه مساحت قطعات</dt><dd><bdi>۴۹۳ تا ۴۹۴</bdi> <small>م<sup>۲</sup></small></dd></div></dl></header>
+  <div class="body">
+    <div class="drawing"><svg viewBox="0 0 195.6 95.8" class="plan" role="img" aria-label="نقشه تفکیک باغ ولیران" xmlns="http://www.w3.org/2000/svg">
+<defs><pattern id="g-garden" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="3" class="gfill"/><line x1="0" y1="0" x2="0" y2="3" class="ghatch"/></pattern></defs>
+<defs><marker id="ah-garden" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs>
+<polygon points="30.00,78.31 36.36,60.22 41.13,47.30 43.42,41.83 47.79,38.05 58.53,28.41 91.83,18.47 102.05,18.85 106.24,20.18 127.45,19.52 159.26,14.00 168.09,18.41 173.84,28.25 181.57,58.95 176.60,60.28 167.22,62.15 158.59,64.14 143.68,66.56 130.22,66.56 127.99,81.81" class="site"/>
+<polygon points="38.80,53.61 41.60,46.21 42.20,46.01 156.60,36.21 159.00,36.41 160.20,37.01 161.20,38.21 161.60,39.81 161.20,41.41 160.20,42.61 158.40,43.41" class="road"/>
+<polyline points="34.21,50.32 158.00,39.81" class="cl"/>
+<polygon points="41.60,46.01 43.40,41.81 44.60,40.81 45.00,45.61" class="green" fill="url(#g-garden)"/>
+<polygon points="45.20,45.61 44.80,40.61 49.80,40.21 50.20,45.21" class="resv gate"/>
+<polygon points="45.00,40.41 58.60,28.41 78.00,22.61 79.60,40.41 79.40,42.81 50.40,45.21 49.80,40.01" class="lot" data-no="1"><title>قطعه ۱: ۴۹۳٫۸ متر مربع</title></polygon>
+<polygon points="79.80,42.61 78.20,22.41 91.60,18.41 100.00,18.81 102.00,40.81" class="lot" data-no="2"><title>قطعه ۲: ۴۹۳٫۸ متر مربع</title></polygon>
+<polygon points="102.20,40.81 100.20,18.81 102.20,18.81 106.00,20.21 124.80,19.61 126.40,37.61 126.20,38.81" class="lot" data-no="3"><title>قطعه ۳: ۴۹۳٫۸ متر مربع</title></polygon>
+<polygon points="126.60,38.61 125.00,19.61 127.80,19.61 149.40,15.81 151.20,36.61" class="lot" data-no="4"><title>قطعه ۴: ۴۹۳٫۸ متر مربع</title></polygon>
+<polygon points="176.20,38.21 161.60,39.41 161.00,37.61 159.00,36.21 156.60,36.01 151.40,36.61 149.60,15.61 159.40,14.01 167.80,18.21 174.00,28.61" class="lot" data-no="5"><title>قطعه ۵: ۴۹۳٫۷ متر مربع</title></polygon>
+<polygon points="54.60,79.21 30.00,78.41 38.80,53.81 52.20,52.61" class="lot" data-no="6"><title>قطعه ۶: ۴۹۳٫۱ متر مربع</title></polygon>
+<polygon points="72.40,79.81 54.80,79.21 52.40,52.61 70.00,51.21" class="lot" data-no="7"><title>قطعه ۷: ۴۹۳٫۱ متر مربع</title></polygon>
+<polygon points="89.00,80.41 72.60,79.81 70.20,51.21 86.40,49.81" class="lot" data-no="8"><title>قطعه ۸: ۴۹۳٫۱ متر مربع</title></polygon>
+<polygon points="104.60,81.01 89.20,80.41 86.60,49.81 101.80,48.41" class="lot" data-no="9"><title>قطعه ۹: ۴۹۳٫۱ متر مربع</title></polygon>
+<polygon points="119.40,81.61 104.80,81.01 102.00,48.41 116.40,47.21" class="lot" data-no="10"><title>قطعه ۱۰: ۴۹۳٫۱ متر مربع</title></polygon>
+<polygon points="119.60,81.61 116.60,47.21 133.00,45.81 134.80,66.61 130.20,66.81 128.00,81.81" class="lot" data-no="11"><title>قطعه ۱۱: ۴۹۳٫۱ متر مربع</title></polygon>
+<polygon points="135.00,66.61 133.20,45.81 156.20,43.81 158.00,64.21 144.20,66.61" class="lot" data-no="12"><title>قطعه ۱۲: ۴۹۳٫۱ متر مربع</title></polygon>
+<polygon points="158.20,64.21 156.40,43.81 158.40,43.61 160.20,42.81 161.40,41.41 161.60,39.61 176.40,38.21 181.60,59.01" class="lot" data-no="13"><title>قطعه ۱۳: ۴۹۳٫۱ متر مربع</title></polygon>
+<polygon points="30.00,78.31 36.36,60.22 41.13,47.30 43.42,41.83 47.79,38.05 58.53,28.41 91.83,18.47 102.05,18.85 106.24,20.18 127.45,19.52 159.26,14.00 168.09,18.41 173.84,28.25 181.57,58.95 176.60,60.28 167.22,62.15 158.59,64.14 143.68,66.56 130.22,66.56 127.99,81.81" class="bound"/>
+<text x="65.5" y="35.1" class="ln" font-size="3.50">۱</text>
+<text x="65.5" y="38.7" class="la" font-size="2.30">۴۹۳٫۸</text>
+<text x="90.2" y="30.3" class="ln" font-size="3.50">۲</text>
+<text x="90.2" y="33.9" class="la" font-size="2.30">۴۹۳٫۸</text>
+<text x="113.2" y="29.4" class="ln" font-size="3.50">۳</text>
+<text x="113.2" y="33.0" class="la" font-size="2.30">۴۹۳٫۸</text>
+<text x="138.2" y="27.3" class="ln" font-size="3.50">۴</text>
+<text x="138.2" y="30.9" class="la" font-size="2.30">۴۹۳٫۸</text>
+<text x="161.7" y="26.9" class="ln" font-size="3.50">۵</text>
+<text x="161.7" y="30.5" class="la" font-size="2.30">۴۹۳٫۷</text>
+<text x="43.8" y="66.9" class="ln" font-size="3.50">۶</text>
+<text x="43.8" y="70.5" class="la" font-size="2.30">۴۹۳٫۱</text>
+<text x="62.5" y="65.3" class="ln" font-size="3.50">۷</text>
+<text x="62.5" y="68.9" class="la" font-size="2.30">۴۹۳٫۱</text>
+<text x="79.6" y="64.9" class="ln" font-size="3.50">۸</text>
+<text x="79.6" y="68.5" class="la" font-size="2.30">۴۹۳٫۱</text>
+<text x="95.6" y="64.5" class="ln" font-size="3.50">۹</text>
+<text x="95.6" y="68.1" class="la" font-size="2.30">۴۹۳٫۱</text>
+<text x="110.7" y="64.1" class="ln" font-size="3.50">۱۰</text>
+<text x="110.7" y="67.7" class="la" font-size="2.30">۴۹۳٫۱</text>
+<text x="125.3" y="61.5" class="ln" font-size="3.50">۱۱</text>
+<text x="125.3" y="65.1" class="la" font-size="2.30">۴۹۳٫۱</text>
+<text x="145.6" y="54.9" class="ln" font-size="3.50">۱۲</text>
+<text x="145.6" y="58.5" class="la" font-size="2.30">۴۹۳٫۱</text>
+<text x="168.2" y="50.7" class="ln" font-size="3.50">۱۳</text>
+<text x="168.2" y="54.3" class="la" font-size="2.30">۴۹۳٫۱</text>
+<line x1="32.2" y1="50.5" x2="46.2" y2="49.3" class="ent" marker-end="url(#ah-garden)"/>
+<text x="31.2" y="51.7" class="et" direction="rtl" text-anchor="start" style="text-anchor:start" font-size="2.94">ورودی از جاده A</text>
+<g transform="translate(186.6,9.0) rotate(81)" class="north"><circle r="5.2" class="nc"/><path d="M0,-7.5 L2.2,1.5 L0,0 L-2.2,1.5 z" class="np"/><text y="4.3" class="nt" font-size="3.2">N</text></g>
+<g class="sbar"><rect x="6" y="88.61" width="10" height="1.2" class="sb1"/><rect x="16" y="88.61" width="10" height="1.2" class="sb2"/><text x="6" y="87.41" font-size="2.6" class="st">۰</text><text x="26" y="87.41" font-size="2.6" class="st">۲۰</text><text x="30" y="89.71000000000001" font-size="2.6" class="st" direction="rtl">متر</text></g>
+</svg></div>
+    <aside>
+      <h3>تقسیم زمین</h3>
+      <ul class="legend">
+        <li><span class="sw lot"></span>قطعات ویلایی<b><bdi>۶٬۴۱۴</bdi> م<sup>۲</sup>، <bdi>۸۷٪</bdi></b></li>
+        <li><span class="sw road"></span>معابر ۷ متری و دوربرگردان<b><bdi>۸۹۳</bdi> م<sup>۲</sup>، <bdi>۱۲٪</bdi></b></li>
+        <li><span class="sw gate"></span>نگهبانی<b><bdi>۲۷</bdi> م<sup>۲</sup></b></li>
+        <li><span class="sw green"></span>فضای سبز باقی‌مانده<b><bdi>۱۱</bdi> م<sup>۲</sup>، <bdi>۰٪</bdi></b></li>
+      </ul>
+      <h3>جدول قطعات <small>(متر مربع)</small></h3>
+      <div class="tw"><table><thead><tr><th>قطعه</th><th>مساحت</th></tr></thead><tbody><tr><td>۱</td><td>۴۹۳٫۸</td></tr><tr><td>۲</td><td>۴۹۳٫۸</td></tr><tr><td>۳</td><td>۴۹۳٫۸</td></tr><tr><td>۴</td><td>۴۹۳٫۸</td></tr><tr><td>۵</td><td>۴۹۳٫۷</td></tr><tr><td>۶</td><td>۴۹۳٫۱</td></tr><tr><td>۷</td><td>۴۹۳٫۱</td></tr><tr><td>۸</td><td>۴۹۳٫۱</td></tr><tr><td>۹</td><td>۴۹۳٫۱</td></tr><tr><td>۱۰</td><td>۴۹۳٫۱</td></tr><tr><td>۱۱</td><td>۴۹۳٫۱</td></tr><tr><td>۱۲</td><td>۴۹۳٫۱</td></tr><tr><td>۱۳</td><td>۴۹۳٫۱</td></tr></tbody></table></div>
+    </aside>
+  </div>
+</section>
+<section class="sheet" id="darvazeh">
+  <header class="sh"><div><p class="eyebrow">قطعه ۳</p><h2>زمین دروازه ری</h2></div>
+  <dl class="kpi"><div><dt>قطعات</dt><dd>۹</dd></div><div><dt>مساحت کل</dt><dd>۴٬۶۸۳ <small>م<sup>۲</sup></small></dd></div><div><dt>بازه مساحت قطعات</dt><dd><bdi>۴۴۳ تا ۴۷۸</bdi> <small>م<sup>۲</sup></small></dd></div></dl></header>
+  <div class="body">
+    <div class="drawing"><svg viewBox="0 0 117.1 128.0" class="plan" role="img" aria-label="نقشه تفکیک زمین دروازه ری" xmlns="http://www.w3.org/2000/svg">
+<defs><pattern id="g-darvazeh" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="3" class="gfill"/><line x1="0" y1="0" x2="0" y2="3" class="ghatch"/></pattern></defs>
+<defs><marker id="ah-darvazeh" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs>
+<polygon points="70.55,14.00 73.30,15.38 90.62,19.05 93.88,20.22 92.03,26.11 92.09,31.69 92.74,36.17 96.28,43.09 99.69,50.49 102.34,58.35 103.09,68.86 98.59,94.20 95.43,92.87 77.46,100.07 71.82,104.98 63.05,106.65 55.05,113.24 49.38,113.56 41.06,114.01 34.82,111.71 37.22,105.80 38.14,94.57 33.87,76.15 31.07,68.90 30.95,63.36 30.00,55.93 30.98,52.17 39.01,50.83 50.86,47.39 56.23,44.90 61.00,40.31 64.27,35.65 69.96,21.37" class="site"/>
+<polygon points="38.20,95.61 38.20,94.21 36.80,88.41 65.00,78.21 76.40,37.21 77.20,35.81 78.40,34.81 80.00,34.41 82.20,35.21 83.40,37.01 83.40,39.41 71.60,81.81 70.80,83.21 68.80,84.61" class="road"/>
+<polyline points="31.90,94.05 68.00,81.01 80.00,38.01" class="cl"/>
+<polygon points="37.20,88.21 36.60,88.21 35.80,84.41" class="green" fill="url(#g-darvazeh)"/>
+<polygon points="37.40,88.01 35.60,83.41 40.40,81.61 42.00,86.41" class="resv gate"/>
+<polygon points="42.60,86.21 42.00,86.21 40.40,81.41 35.40,83.21 33.80,76.01 31.00,69.01 31.00,62.81 30.00,56.61 31.00,52.21 39.40,50.61 51.20,83.01" class="lot" data-no="1"><title>قطعه ۱: ۴۴۵٫۴ متر مربع</title></polygon>
+<polygon points="51.60,83.01 51.00,82.41 39.60,50.81 49.80,47.81 65.40,76.21 64.80,78.21" class="lot" data-no="2"><title>قطعه ۲: ۴۵۱٫۴ متر مربع</title></polygon>
+<polygon points="65.40,76.01 49.80,47.61 51.00,47.41 56.20,44.81 61.40,39.61 74.60,43.41" class="lot" data-no="3"><title>قطعه ۳: ۴۵۴٫۱ متر مربع</title></polygon>
+<polygon points="61.60,39.61 64.60,34.81 70.00,21.61 70.60,14.01 73.80,15.61 90.00,18.81 93.00,19.81 82.20,35.01 80.00,34.21 78.40,34.61 77.00,35.81 76.20,37.21 74.60,43.21" class="lot" data-no="4"><title>قطعه ۴: ۴۵۶٫۱ متر مربع</title></polygon>
+<polygon points="34.80,111.61 37.20,106.01 38.00,95.81 54.60,90.01 61.00,108.21 55.60,112.81 53.60,113.41 40.80,114.01" class="lot" data-no="5"><title>قطعه ۵: ۴۴۳٫۱ متر مربع</title></polygon>
+<polygon points="54.60,89.81 68.80,84.81 71.00,83.41 87.60,96.01 77.40,100.01 71.80,105.01 63.60,106.41 61.20,108.01" class="lot" data-no="6"><title>قطعه ۶: ۴۴۲٫۸ متر مربع</title></polygon>
+<polygon points="98.60,94.21 95.20,92.81 87.80,95.81 71.20,83.41 71.00,83.01 71.80,81.81 74.60,71.21 101.40,78.61" class="lot" data-no="7"><title>قطعه ۷: ۴۷۸٫۴ متر مربع</title></polygon>
+<polygon points="101.40,78.41 74.80,71.01 79.20,55.01 102.60,61.61 103.00,69.21" class="lot" data-no="8"><title>قطعه ۸: ۴۴۴٫۹ متر مربع</title></polygon>
+<polygon points="102.60,61.41 79.20,54.81 83.60,39.41 83.60,37.01 82.40,34.81 93.00,20.01 93.80,20.41 92.00,25.81 92.00,32.01 92.60,35.61 99.60,50.21 102.40,58.21" class="lot" data-no="9"><title>قطعه ۹: ۴۵۱٫۷ متر مربع</title></polygon>
+<polygon points="70.55,14.00 73.30,15.38 90.62,19.05 93.88,20.22 92.03,26.11 92.09,31.69 92.74,36.17 96.28,43.09 99.69,50.49 102.34,58.35 103.09,68.86 98.59,94.20 95.43,92.87 77.46,100.07 71.82,104.98 63.05,106.65 55.05,113.24 49.38,113.56 41.06,114.01 34.82,111.71 37.22,105.80 38.14,94.57 33.87,76.15 31.07,68.90 30.95,63.36 30.00,55.93 30.98,52.17 39.01,50.83 50.86,47.39 56.23,44.90 61.00,40.31 64.27,35.65 69.96,21.37" class="bound"/>
+<text x="39.2" y="68.5" class="ln" font-size="3.50">۱</text>
+<text x="39.2" y="72.1" class="la" font-size="2.30">۴۴۵٫۴</text>
+<text x="52.1" y="65.4" class="ln" font-size="3.50">۲</text>
+<text x="52.1" y="69.0" class="la" font-size="2.30">۴۵۱٫۴</text>
+<text x="63.2" y="53.6" class="ln" font-size="3.50">۳</text>
+<text x="63.2" y="57.2" class="la" font-size="2.30">۴۵۴٫۱</text>
+<text x="76.3" y="27.6" class="ln" font-size="3.50">۴</text>
+<text x="76.3" y="31.2" class="la" font-size="2.30">۴۵۶٫۱</text>
+<text x="48.0" y="103.1" class="ln" font-size="3.50">۵</text>
+<text x="48.0" y="106.7" class="la" font-size="2.30">۴۴۳٫۱</text>
+<text x="69.0" y="94.8" class="ln" font-size="3.50">۶</text>
+<text x="69.0" y="98.4" class="la" font-size="2.30">۴۴۲٫۸</text>
+<text x="86.6" y="82.9" class="ln" font-size="3.50">۷</text>
+<text x="86.6" y="86.5" class="la" font-size="2.30">۴۷۸٫۴</text>
+<text x="89.7" y="66.3" class="ln" font-size="3.50">۸</text>
+<text x="89.7" y="69.9" class="la" font-size="2.30">۴۴۴٫۹</text>
+<text x="90.3" y="45.1" class="ln" font-size="3.50">۹</text>
+<text x="90.3" y="48.7" class="la" font-size="2.30">۴۵۱٫۷</text>
+<line x1="30.0" y1="94.7" x2="43.2" y2="90.0" class="ent" marker-end="url(#ah-darvazeh)"/>
+<text x="29.1" y="96.2" class="et" direction="rtl" text-anchor="start" style="text-anchor:start" font-size="2.94">ورودی از جاده B</text>
+<g transform="translate(108.1,9.0) rotate(0)" class="north"><circle r="5.2" class="nc"/><path d="M0,-7.5 L2.2,1.5 L0,0 L-2.2,1.5 z" class="np"/><text y="4.3" class="nt" font-size="3.2">N</text></g>
+<g class="sbar"><rect x="6" y="120.80999999999999" width="10" height="1.2" class="sb1"/><rect x="16" y="120.80999999999999" width="10" height="1.2" class="sb2"/><text x="6" y="119.60999999999999" font-size="2.6" class="st">۰</text><text x="26" y="119.60999999999999" font-size="2.6" class="st">۲۰</text><text x="30" y="121.91" font-size="2.6" class="st" direction="rtl">متر</text></g>
+</svg></div>
+    <aside>
+      <h3>تقسیم زمین</h3>
+      <ul class="legend">
+        <li><span class="sw lot"></span>قطعات ویلایی<b><bdi>۴٬۰۶۸</bdi> م<sup>۲</sup>، <bdi>۸۷٪</bdi></b></li>
+        <li><span class="sw road"></span>معابر ۷ متری و دوربرگردان<b><bdi>۵۸۷</bdi> م<sup>۲</sup>، <bdi>۱۳٪</bdi></b></li>
+        <li><span class="sw gate"></span>نگهبانی<b><bdi>۲۷</bdi> م<sup>۲</sup></b></li>
+        <li><span class="sw green"></span>فضای سبز باقی‌مانده<b><bdi>۲</bdi> م<sup>۲</sup>، <bdi>۰٪</bdi></b></li>
+      </ul>
+      <h3>جدول قطعات <small>(متر مربع)</small></h3>
+      <div class="tw"><table><thead><tr><th>قطعه</th><th>مساحت</th></tr></thead><tbody><tr><td>۱</td><td>۴۴۵٫۴</td></tr><tr><td>۲</td><td>۴۵۱٫۴</td></tr><tr><td>۳</td><td>۴۵۴٫۱</td></tr><tr><td>۴</td><td>۴۵۶٫۱</td></tr><tr><td>۵</td><td>۴۴۳٫۱</td></tr><tr><td>۶</td><td>۴۴۲٫۸</td></tr><tr><td>۷</td><td>۴۷۸٫۴</td></tr><tr><td>۸</td><td>۴۴۴٫۹</td></tr><tr><td>۹</td><td>۴۵۱٫۷</td></tr></tbody></table></div>
+    </aside>
+  </div>
+</section>
+  <section class="econ" id="econ">
+  <div><p class="eyebrow">برآورد هزینه</p><h2>جدول اقتصادی</h2></div>
+  <div class="inputs">
+    <label for="ppm">قیمت خرید هر متر (تومان)<input id="ppm" inputmode="numeric" value="10,000,000"></label>
+    <label for="cpl">هزینه تفکیک هر قطعه (تومان)<input id="cpl" inputmode="numeric" value="1,200,000,000"></label>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>زمین</th><th>متراژ اولیه (م<sup>۲</sup>)</th><th>متراژ پس از قطعه‌بندی (م<sup>۲</sup>)</th><th>تعداد قطعه</th><th>قیمت خرید هر متر</th><th>هزینه تفکیک هر قطعه</th><th>قیمت کل</th><th>قیمت تمام‌شده هر متر مفید</th></tr></thead>
+    <tbody id="econ-body"></tbody>
+  </table></div>
+  <p class="fine">قیمت کل = متراژ اولیه × قیمت خرید هر متر + تعداد قطعه × هزینه تفکیک هر قطعه. در دو ردیف جمع کل، ستون‌های قیمت خرید و هزینه تفکیک مبلغ کل هستند (متراژ × قیمت هر متر و تعداد قطعه × هزینه هر قطعه). قیمت تمام‌شده هر متر مفید = قیمت کل ÷ متراژ پس از قطعه‌بندی. زمین دو هکتاری دو ردیف دارد، یکی برای هر طرح؛ جمع کل هم برای هر دو حالت جدا آمده است. مقدار دو کادر بالا را می‌توانید تغییر دهید و جدول خودش دوباره حساب می‌شود.</p>
+</section>
+<script>
+(function(){
+  var ROWS=[{"key": "twoha_A", "name": "زمین دو هکتاری (طرح الف)", "a0": 20535.8, "a1": 17126.0, "n": 37}, {"key": "twoha_B", "name": "زمین دو هکتاری (طرح ب)", "a0": 20535.8, "a1": 16087.5, "n": 35}, {"key": "garden", "name": "باغ ولیران", "a0": 7344.0, "a1": 6413.7, "n": 13}, {"key": "darvazeh", "name": "زمین دروازه ری", "a0": 4683.3, "a1": 4067.9, "n": 9}];
+  var fa=function(s){return String(s).replace(/[0-9]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'[d];}).replace(/,/g,'٬').replace(/\./g,'٫');};
+  var fmt=function(x,d){return fa(Number(x).toLocaleString('en-US',{minimumFractionDigits:d||0,maximumFractionDigits:d||0}));};
+  var toEn=function(s){return String(s).replace(/[۰-۹]/g,function(c){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(c);}).replace(/[٬,\s]/g,'');};
+  var money=function(x){ var u=x>=1e9?1e9:1e6, v=x/u, d=(Math.abs(v-Math.round(v))<1e-9)?0:2; return fmt(v,d)+(u===1e9?' میلیارد':' میلیون'); };
+  var full=function(x){return fmt(Math.round(x/1000)*1000,0);};
+  function row(r,ppm,cpl,cls){
+    var tot=r.a0*ppm+r.n*cpl, per=tot/r.a1;
+    return '<tr'+(cls?' class="'+cls+'"':'')+'><td>'+r.name+'</td><td>'+fmt(r.a0,0)+'</td><td>'+fmt(r.a1,0)+'</td><td>'+fmt(r.n)+'</td><td>'+(cls?money(r.a0*ppm)+' تومان':money(ppm))+'</td><td>'+(cls?money(r.n*cpl)+' تومان':money(cpl))+'</td><td>'+money(tot)+' تومان</td><td class="hi">'+money(per)+' تومان</td></tr>';
+  }
+  function render(){
+    var ppm=Number(toEn(document.getElementById('ppm').value))||0, cpl=Number(toEn(document.getElementById('cpl').value))||0;
+    var h='';
+    ROWS.forEach(function(r){h+=row(r,ppm,cpl);});
+    [['twoha_A','جمع کل با طرح الف'],['twoha_B','جمع کل با طرح ب']].forEach(function(t){
+      var s={name:t[1],a0:0,a1:0,n:0};
+      ROWS.forEach(function(r){ if(r.key.indexOf('twoha')===0 && r.key!==t[0]) return; s.a0+=r.a0; s.a1+=r.a1; s.n+=r.n; });
+      h+=row(s,ppm,cpl,'total');
+    });
+    document.getElementById('econ-body').innerHTML=h;
+  }
+  ['ppm','cpl'].forEach(function(id){var el=document.getElementById(id);el.addEventListener('input',render);el.addEventListener('blur',function(){var n=Number(toEn(el.value));if(n)el.value=n.toLocaleString('en-US');});});
+  render();
+})();
+</script>
+</div>
+
+</body>
+</html>
